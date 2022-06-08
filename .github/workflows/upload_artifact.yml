@@ -1,0 +1,51 @@
+name: upload_artifact
+
+on:
+   push:
+        tags:
+            - "v*"
+
+jobs:
+  upload_artifact:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Build
+      run: |
+        echo 'Build linux amd 64'
+        env GOOS=linux GOARCH=amd64 go build
+        chmod +x ./uuid-clipboard
+
+        echo 'Build linux arm 32'
+        env GOOS=linux GOARCH=arm go build -o uuid-clipboard-arm32
+        chmod +x ./uuid-clipboard-arm32
+
+        echo 'Build linux arm 64'
+        env GOOS=linux GOARCH=arm64 go build -o uuid-clipboard-arm64
+        chmod +x ./uuid-clipboard-arm64
+
+        echo 'Build windows amd 64'
+        env GOOS=windows GOARCH=amd64 go build
+        chmod +x ./uuid-clipboard.exe
+
+    - name: Set GitHub user
+      run: |
+          git config --global user.name 'oat9002'
+          git config --global user.email 'oat9002@hotmail.com'
+          
+    - name: Publish GitHub Release
+      uses: ncipollo/release-action@v1
+      with:
+          artifacts: "auto-compound*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          omitBody: true
+          omitBodyDuringUpdate: true
+          omitName: true
+          omitNameDuringUpdate: true
