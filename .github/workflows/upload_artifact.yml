@@ -42,7 +42,7 @@ jobs:
     - name: Publish GitHub Release
       uses: ncipollo/release-action@v1
       with:
-          artifacts: "auto-compound*"
+          artifacts: "uuid-clipboard*"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           omitBody: true
