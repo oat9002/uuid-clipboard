@@ -1,9 +1,10 @@
 name: upload_artifact
 
 on:
-   push:
-        tags:
-            - "v*"
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
 
 jobs:
   upload_artifact:
