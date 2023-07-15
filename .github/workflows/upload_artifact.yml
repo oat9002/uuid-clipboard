@@ -24,14 +24,14 @@ jobs:
 
         echo 'Build linux arm 32'
         env GOOS=linux GOARCH=arm go build -o ./linux-arm32/
-        chmod +x ./linux-arm32/uuid-clipboard-arm32
+        chmod +x ./linux-arm32/uuid-clipboard
 
         echo 'Build linux arm 64'
         env GOOS=linux GOARCH=arm64 go build -o ./linux-arm64/
         chmod +x ./linux-arm64/uuid-clipboard
 
         echo 'Build windows amd 64'
-        env GOOS=windows GOARCH=amd64 go build -o ./windows/
+        env GOOS=windows GOARCH=amd64 go build -o ./windows/uuid-clipboard.exe
         chmod +x ./windows/uuid-clipboard.exe
 
         echo 'Build mac apple silicon'
