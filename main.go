@@ -27,7 +27,7 @@ func main() {
 		clipboard.Write(clipboard.FmtText, []byte(uuid))
 		fmt.Printf("Here: %s - auto save to clipboard\n", uuid)
 		fmt.Println("Press Enter to generate new uuid")
-		fmt.Println("Press any button to exit\n")
+		fmt.Println("Press any button to exit")
 
 		switch ev := term.PollEvent(); ev.Type {
 		case term.EventKey:

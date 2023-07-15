@@ -19,30 +19,34 @@ jobs:
     - name: Build
       run: |
         echo 'Build linux amd 64'
-        env GOOS=linux GOARCH=amd64 go build
-        chmod +x ./uuid-clipboard
+        env GOOS=linux GOARCH=amd64 go build -o ./linux-amd64/
+        chmod +x ./linux-amd64/uuid-clipboard
 
         echo 'Build linux arm 32'
-        env GOOS=linux GOARCH=arm go build -o uuid-clipboard-arm32
-        chmod +x ./uuid-clipboard-arm32
+        env GOOS=linux GOARCH=arm go build -o ./linux-arm32/
+        chmod +x ./linux-arm32/uuid-clipboard-arm32
 
         echo 'Build linux arm 64'
-        env GOOS=linux GOARCH=arm64 go build -o uuid-clipboard-arm64
-        chmod +x ./uuid-clipboard-arm64
+        env GOOS=linux GOARCH=arm64 go build -o ./linux-arm64/
+        chmod +x ./linux-arm64/uuid-clipboard
 
         echo 'Build windows amd 64'
-        env GOOS=windows GOARCH=amd64 go build
-        chmod +x ./uuid-clipboard.exe
+        env GOOS=windows GOARCH=amd64 go build -o ./windows/
+        chmod +x ./windows/uuid-clipboard.exe
+
+        echo 'Build mac apple silicon'
+        env GOOS=darwin GOARCH=arm64 go build -o ./apple-silicon/
+        chmod +x ./apple-silicon/uuid-clipboard
 
     - name: Set GitHub user
       run: |
-          git config --global user.name 'oat9002'
-          git config --global user.email 'oat9002@hotmail.com'
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           
     - name: Publish GitHub Release
       uses: ncipollo/release-action@v1
       with:
-          artifacts: "uuid-clipboard*"
+          artifacts: "linux-amd64,linux-arm32,linux-arm64,windows,apple-silicon"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           omitBody: true
