@@ -46,7 +46,7 @@ jobs:
     - name: Publish GitHub Release
       uses: ncipollo/release-action@v1
       with:
-          artifacts: "linux-amd64,linux-arm32,linux-arm64,windows,apple-silicon"
+          artifacts: "./linux-amd64/uuid-clipboard,./linux-arm32/uuid-clipboard,./linux-arm64/uuid-clipboard,./windows/uuid-clipboard.exe,./apple-silicon/uuid-clipboard"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           omitBody: true
