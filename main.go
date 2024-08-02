@@ -15,17 +15,27 @@ func main() {
 	}
 	defer term.Close()
 
+	isClipboardInit := true
 	err = clipboard.Init()
 	if err != nil {
-		panic(err)
+		isClipboardInit = false
 	}
 
+	msg := "You need to manually copy the uuid"
 	isExit := false
+
+	if isClipboardInit {
+		msg = "auto save to clipboard"
+	}
 
 	for {
 		uuid := uuid.New().String()
-		clipboard.Write(clipboard.FmtText, []byte(uuid))
-		fmt.Printf("Here: %s - auto save to clipboard\n", uuid)
+
+		if isClipboardInit {
+			clipboard.Write(clipboard.FmtText, []byte(uuid))
+		}
+
+		fmt.Printf("Here: %s - %s\n", uuid, msg)
 		fmt.Println("Press Enter to generate new uuid")
 		fmt.Println("Press any button to exit")
 
