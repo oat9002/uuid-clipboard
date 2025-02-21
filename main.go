@@ -25,6 +25,7 @@ func main() {
 	}
 
 	msg := "You need to manually copy the uuid"
+	isExit := false
 
 	if isClipboardInit {
 		msg = "auto save to clipboard"
@@ -32,11 +33,7 @@ func main() {
 
 	for {
 		screen.Clear()
-		uuid := uuid.New().String()
-
-		if isClipboardInit {
-			clipboard.Write(clipboard.FmtText, []byte(uuid))
-		}
+		uuid := generateUuidAndCopyToClipboard(screen, isClipboardInit)
 
 		message := fmt.Sprintf("Here: %s - %s\nPress Enter to generate new UUID\nPress any other key to exit", uuid, msg)
 		printMessage(screen, message)
@@ -49,11 +46,14 @@ func main() {
 		case *tcell.EventKey:
 			switch ev.(*tcell.EventKey).Key() {
 			case tcell.KeyEnter:
-				fmt.Println("Generating new UUID...")
-				screen.Sync()
+				isExit = false
 			default:
-				break
+				isExit = true
 			}
+		}
+
+		if isExit {
+			break
 		}
 	}
 }
@@ -70,4 +70,19 @@ func printMessage(screen tcell.Screen, message string) {
 		screen.SetContent(x, y, r, nil, tcell.StyleDefault)
 		x++
 	}
+}
+
+func generateUuidAndCopyToClipboard(screen tcell.Screen, isClipboardInit bool) string {
+	uuid := uuid.New().String()
+
+	if !isClipboardInit {
+		return uuid
+	}
+
+	err := clipboard.Write(clipboard.FmtText, []byte(uuid))
+	if err != nil {
+		printMessage(screen, "Failed to copy to clipboard")
+	}
+
+	return uuid
 }
