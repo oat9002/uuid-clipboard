@@ -19,23 +19,23 @@ jobs:
       - name: Build
         run: |
           echo 'Build linux amd 64'
-          env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build
+          env GOOS=linux GOARCH=amd64 go build
           chmod +x ./uuid-clipboard
 
           echo 'Build linux arm 32'
-          env CGO_ENABLED=1 GOOS=linux GOARCH=arm go build -o uuid-clipboard-arm32
+          env GOOS=linux GOARCH=arm go build -o uuid-clipboard-arm32
           chmod +x ./uuid-clipboard-arm32
 
           echo 'Build linux arm 64'
-          env CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -o uuid-clipboard-arm64
+          env GOOS=linux GOARCH=arm64 go build -o uuid-clipboard-arm64
           chmod +x ./uuid-clipboard-arm64
 
           echo 'Build windows amd 64'
-          env CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build
+          env GOOS=windows GOARCH=amd64 go build
           chmod +x ./uuid-clipboard.exe
 
           echo 'Build mac apple silicon'
-          env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -o uuid-clipboard-apple-silicon
+          env GOOS=darwin GOARCH=arm64 go build -o uuid-clipboard-apple-silicon
           chmod +x ./uuid-clipboard-apple-silicon
 
       - name: Set GitHub user
