@@ -3,17 +3,20 @@ package main
 import (
 	"fmt"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/google/uuid"
-	term "github.com/nsf/termbox-go"
 	"golang.design/x/clipboard"
 )
 
 func main() {
-	err := term.Init()
+	screen, err := tcell.NewScreen()
 	if err != nil {
 		panic(err)
 	}
-	defer term.Close()
+	if err := screen.Init(); err != nil {
+		panic(err)
+	}
+	defer screen.Fini()
 
 	isClipboardInit := true
 	err = clipboard.Init()
@@ -22,40 +25,60 @@ func main() {
 	}
 
 	msg := "You need to manually copy the uuid"
-	isExit := false
 
 	if isClipboardInit {
 		msg = "auto save to clipboard"
 	}
 
+	uuid := generateUuidAndCopyToClipboard(screen, isClipboardInit)
+
 	for {
-		uuid := uuid.New().String()
+		screen.Clear()
 
-		if isClipboardInit {
-			clipboard.Write(clipboard.FmtText, []byte(uuid))
-		}
+		message := fmt.Sprintf("Here: %s - %s\nPress Enter to generate new UUID\nPress any other key to exit", uuid, msg)
+		printMessage(screen, message)
 
-		fmt.Printf("Here: %s - %s\n", uuid, msg)
-		fmt.Println("Press Enter to generate new uuid")
-		fmt.Println("Press any button to exit")
+		screen.Show()
 
-		switch ev := term.PollEvent(); ev.Type {
-		case term.EventKey:
-			switch ev.Key {
-			case term.KeyEnter:
-				term.Sync()
-				isExit = false
-
+		switch ev := screen.PollEvent(); ev.(type) {
+		case *tcell.EventResize:
+			screen.Sync()
+		case *tcell.EventKey:
+			switch ev.(*tcell.EventKey).Key() {
+			case tcell.KeyEnter:
+				uuid = generateUuidAndCopyToClipboard(screen, isClipboardInit)
 			default:
-				term.Sync()
-				isExit = true
+				return
 			}
-		case term.EventError:
-			panic(ev.Err)
-		}
-
-		if isExit {
-			break
 		}
 	}
+}
+
+func printMessage(screen tcell.Screen, message string) {
+	lines := []rune(message)
+	x, y := 0, 0
+	for _, r := range lines {
+		if r == '\n' {
+			x = 0
+			y++
+			continue
+		}
+		screen.SetContent(x, y, r, nil, tcell.StyleDefault)
+		x++
+	}
+}
+
+func generateUuidAndCopyToClipboard(screen tcell.Screen, isClipboardInit bool) string {
+	uuid := uuid.New().String()
+
+	if !isClipboardInit {
+		return uuid
+	}
+
+	err := clipboard.Write(clipboard.FmtText, []byte(uuid))
+	if err != nil {
+		printMessage(screen, "Failed to copy to clipboard")
+	}
+
+	return uuid
 }

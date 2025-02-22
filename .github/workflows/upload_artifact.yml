@@ -9,17 +9,20 @@ jobs:
   upload_artifact:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: ">=1.21.0"
+          go-version: ">=1.23.0"
+
+      - name: Install X11
+        run: sudo apt-get install libx11-dev
 
       - name: Build
         run: |
           echo 'Build linux amd 64'
-          env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build
+          env env CGO_ENABLED=1 CGO_GOOS=linux GOARCH=amd64 go build
           chmod +x ./uuid-clipboard
 
           echo 'Build linux arm 32'
