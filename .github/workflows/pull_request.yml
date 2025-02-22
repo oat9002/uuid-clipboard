@@ -19,4 +19,18 @@ jobs:
         run: sudo apt-get install libx11-dev
 
       - name: Build
-        run: env CGO_ENABLED=1 go build
+        run: |
+          echo 'Build linux amd 64'
+          env CGO_ENABLED=1 CGO_GOOS=linux GOARCH=amd64 go build
+
+          echo 'Build linux arm 32'
+          env CGO_ENABLED=1 GOOS=linux GOARCH=arm go build -o uuid-clipboard-arm32
+
+          echo 'Build linux arm 64'
+          env CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -o uuid-clipboard-arm64
+
+          echo 'Build windows amd 64'
+          env CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build
+
+          echo 'Build mac apple silicon'
+          env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -o uuid-clipboard-apple-silicon

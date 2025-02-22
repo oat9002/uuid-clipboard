@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: |
           echo 'Build linux amd 64'
-          env env CGO_ENABLED=1 CGO_GOOS=linux GOARCH=amd64 go build
+          env CGO_ENABLED=1 CGO_GOOS=linux GOARCH=amd64 go build
           chmod +x ./uuid-clipboard
 
           echo 'Build linux arm 32'
