@@ -14,7 +14,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: ">=1.23.0"
+          go-version: ">=1.26.0"
 
       - name: Install X11
         run: sudo apt-get install libx11-dev
