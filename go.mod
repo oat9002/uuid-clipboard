@@ -3,7 +3,7 @@ module github.com/oat9002/uuid-clipboard
 go 1.25.0
 
 require (
-	github.com/gdamore/tcell/v2 v2.13.8
+	github.com/gdamore/tcell/v2 v2.13.9
 	github.com/google/uuid v1.6.0
 	golang.design/x/clipboard v0.7.1
 )
