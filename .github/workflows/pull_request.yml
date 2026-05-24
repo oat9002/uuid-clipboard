@@ -18,6 +18,9 @@ jobs:
       - name: Install X11
         run: sudo apt-get install libx11-dev
 
+      - name: Test
+        run: go test -v ./...
+
       - name: Build
         run: |
           echo 'Build linux amd 64'
