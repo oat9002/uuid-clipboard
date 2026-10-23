@@ -4,22 +4,54 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing tag to build and release (e.g. v1.0.0)
+        description: Tag to release; created if missing (e.g. v1.2.0)
         required: true
         type: string
 
 permissions:
   contents: read
 
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      commit: ${{ steps.resolve.outputs.result }}
+    steps:
+      - name: Resolve release commit
+        id: resolve
+        uses: actions/github-script@v8
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        with:
+          result-encoding: string
+          script: |
+            const tag = process.env.RELEASE_TAG;
+            try {
+              const { data } = await github.rest.repos.getCommit({
+                ...context.repo,
+                ref: `refs/tags/${tag}`,
+              });
+              core.info(`Building existing tag ${tag} at ${data.sha}`);
+              return data.sha;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              core.info(`Tag ${tag} will be created at ${context.sha} after builds succeed`);
+              return context.sha;
+            }
+
   build:
+    needs: prepare
     uses: ./.github/workflows/build.yml
     with:
-      ref: refs/tags/${{ inputs.tag }}
+      ref: ${{ needs.prepare.outputs.commit }}
       upload-artifacts: true
 
   release:
-    needs: build
+    needs: [prepare, build]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -35,6 +67,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ inputs.tag }}
+          commit: ${{ needs.prepare.outputs.commit }}
           artifacts: "dist/uuid-clipboard*"
           artifactErrorsFailBuild: true
           token: ${{ secrets.GITHUB_TOKEN }}
