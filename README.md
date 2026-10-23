@@ -9,3 +9,12 @@ You can download file from `release` or clone this project and do `go run main.g
 ## Requirement from library
 
 - [clipboard copy](https://github.com/golang-design/clipboard?tab=readme-ov-file#dependency)
+
+## Release
+
+Create and push a version tag, then open **Actions → Release → Run workflow**
+and enter the existing tag (for example, `v1.0.0`). The workflow tests and builds
+that tag, uploads the binaries with `actions/upload-artifact`, downloads them in
+the release job, and attaches them to the GitHub Release for that tag.
+
+Releases run manually; pushing a tag does not publish a release.

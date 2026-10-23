@@ -18,19 +18,11 @@ func main() {
 	}
 	defer screen.Fini()
 
-	isClipboardInit := true
-	err = clipboard.Init()
-	if err != nil {
-		isClipboardInit = false
-	}
+	run(screen, clipboard.Init() == nil, clipboard.Write)
+}
 
-	msg := "You need to manually copy the uuid"
-
-	if isClipboardInit {
-		msg = "auto save to clipboard"
-	}
-
-	uuid := generateUuidAndCopyToClipboard(screen, isClipboardInit)
+func run(screen tcell.Screen, isClipboardInit bool, write func(clipboard.Format, []byte) <-chan struct{}) {
+	uuid, msg := generateUuidAndCopyToClipboard(isClipboardInit, write)
 
 	for {
 		screen.Clear()
@@ -46,7 +38,7 @@ func main() {
 		case *tcell.EventKey:
 			switch ev.(*tcell.EventKey).Key() {
 			case tcell.KeyEnter:
-				uuid = generateUuidAndCopyToClipboard(screen, isClipboardInit)
+				uuid, msg = generateUuidAndCopyToClipboard(isClipboardInit, write)
 			default:
 				return
 			}
@@ -68,17 +60,16 @@ func printMessage(screen tcell.Screen, message string) {
 	}
 }
 
-func generateUuidAndCopyToClipboard(screen tcell.Screen, isClipboardInit bool) string {
+func generateUuidAndCopyToClipboard(isClipboardInit bool, write func(clipboard.Format, []byte) <-chan struct{}) (string, string) {
 	uuid := uuid.New().String()
 
 	if !isClipboardInit {
-		return uuid
+		return uuid, "You need to manually copy the uuid"
 	}
 
-	err := clipboard.Write(clipboard.FmtText, []byte(uuid))
-	if err != nil {
-		printMessage(screen, "Failed to copy to clipboard")
+	if write(clipboard.FmtText, []byte(uuid)) == nil {
+		return uuid, "Failed to copy to clipboard; manually copy the uuid"
 	}
 
-	return uuid
+	return uuid, "auto save to clipboard"
 }
