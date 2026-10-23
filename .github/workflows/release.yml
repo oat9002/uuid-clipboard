@@ -30,18 +30,31 @@ jobs:
           result-encoding: string
           script: |
             const tag = process.env.RELEASE_TAG;
+            let object;
             try {
-              const { data } = await github.rest.repos.getCommit({
+              const { data } = await github.rest.git.getRef({
                 ...context.repo,
-                ref: `refs/tags/${tag}`,
+                ref: `tags/${tag}`,
               });
-              core.info(`Building existing tag ${tag} at ${data.sha}`);
-              return data.sha;
+              object = data.object;
             } catch (error) {
               if (error.status !== 404) throw error;
               core.info(`Tag ${tag} will be created at ${context.sha} after builds succeed`);
               return context.sha;
             }
+
+            while (object.type === 'tag') {
+              const { data } = await github.rest.git.getTag({
+                ...context.repo,
+                tag_sha: object.sha,
+              });
+              object = data.object;
+            }
+            if (object.type !== 'commit') {
+              throw new Error(`Tag ${tag} does not point to a commit`);
+            }
+            core.info(`Building existing tag ${tag} at ${object.sha}`);
+            return object.sha;
 
   build:
     needs: prepare
