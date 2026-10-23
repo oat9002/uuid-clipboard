@@ -4,36 +4,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: ">=1.26.0"
-
-      - name: Install X11
-        run: sudo apt-get install libx11-dev
-
-      - name: Test
-        run: go test -v ./...
-
-      - name: Build
-        run: |
-          echo 'Build linux amd 64'
-          env CGO_GOOS=linux GOARCH=amd64 go build
-
-          echo 'Build linux arm 32'
-          env GOOS=linux GOARCH=arm go build -o uuid-clipboard-arm32
-
-          echo 'Build linux arm 64'
-          env GOOS=linux GOARCH=arm64 go build -o uuid-clipboard-arm64
-
-          echo 'Build windows amd 64'
-          env GOOS=windows GOARCH=amd64 go build
-
-          echo 'Build mac apple silicon'
-          env GOOS=darwin GOARCH=arm64 go build -o uuid-clipboard-apple-silicon
+    uses: ./.github/workflows/build.yml
