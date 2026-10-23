@@ -67,7 +67,6 @@ func generateUuidAndCopyToClipboard(isClipboardInit bool, write func(clipboard.F
 		return uuid, "You need to manually copy the uuid"
 	}
 
-	// Write returns an overwrite notification channel on success, or nil on failure.
 	if write(clipboard.FmtText, []byte(uuid)) == nil {
 		return uuid, "Failed to copy to clipboard; manually copy the uuid"
 	}
