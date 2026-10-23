@@ -1,9 +1,12 @@
-name: upload_artifact
+name: Release
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to build and release (e.g. v1.0.0)
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -12,6 +15,7 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
+      ref: refs/tags/${{ inputs.tag }}
       upload-artifacts: true
 
   release:
@@ -30,6 +34,7 @@ jobs:
       - name: Publish GitHub Release
         uses: ncipollo/release-action@v1
         with:
+          tag: ${{ inputs.tag }}
           artifacts: "dist/uuid-clipboard*"
           artifactErrorsFailBuild: true
           token: ${{ secrets.GITHUB_TOKEN }}

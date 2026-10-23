@@ -3,6 +3,10 @@ name: build
 on:
   workflow_call:
     inputs:
+      ref:
+        description: Git ref to build; defaults to the triggering ref
+        type: string
+        default: ""
       upload-artifacts:
         type: boolean
         default: false
@@ -49,6 +53,8 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
